@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Attendance Tracker</h1>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box stat-presents">
+                Presents: {{ total_presents }}
+            </div>
+            <div class="stat-box stat-absences">
+                Absents: {{ total_absences }}
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{{ url_for('add_student') }}" class="btn">Ajouter étudiant</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Présence (Aujourd'hui)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.prenom }}</td>
+                    <td>
+                        <div class="action-forms">
+                            <form action="{{ url_for('mark_attendance', student_id=student.id) }}" method="POST">
+                                <input type="hidden" name="status" value="present">
+                                <button type="submit" class="btn btn-present {% if student_status.get(student.id) == 'present' %}active{% endif %}">
+                                    ✅ Présent
+                                </button>
+                            </form>
+                            <form action="{{ url_for('mark_attendance', student_id=student.id) }}" method="POST">
+                                <input type="hidden" name="status" value="absent">
+                                <button type="submit" class="btn btn-absent {% if student_status.get(student.id) == 'absent' %}active{% endif %}">
+                                    ❌ Absent
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">Aucun étudiant enregistré.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
